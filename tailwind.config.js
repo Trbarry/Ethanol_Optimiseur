@@ -6,17 +6,37 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50:  '#edf7f1',
+          100: '#d4eddf',
+          200: '#a8dbbf',
+          300: '#73c49a',
+          400: '#3daa72',
+          500: '#1e8f57',
+          600: '#157544',
+          700: '#115e36',
+          800: '#0d4828',
+          900: '#08321c',
         },
+        surface: {
+          DEFAULT: '#f5f8f5',
+          card:    '#ffffff',
+          dark:    '#0f1a13',
+          'card-dark': '#162019',
+        },
+      },
+      fontFamily: {
+        sans: [
+          'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont',
+          '"Segoe UI"', 'sans-serif',
+        ],
+      },
+      boxShadow: {
+        card: '0 1px 3px 0 rgba(15,40,20,0.06), 0 1px 2px -1px rgba(15,40,20,0.04)',
+        'card-md': '0 4px 12px 0 rgba(15,40,20,0.08), 0 2px 4px -1px rgba(15,40,20,0.04)',
+      },
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.25rem',
       },
     },
   },

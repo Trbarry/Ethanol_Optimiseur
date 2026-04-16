@@ -46,15 +46,12 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Load persisted data on mount
   useEffect(() => {
     const profile = getVehicleProfile()
     const tank = getLastTankState()
     const hist = getHistory()
-
     setVehicleProfile(profile)
     setHistory(hist)
-
     setForm(prev => {
       const base = buildDefaultForm(profile)
       return {
@@ -67,7 +64,6 @@ export default function App() {
     })
   }, [])
 
-  // Auto-compute with debounce whenever form changes
   const compute = useCallback(
     (values: BlendFormValues, profile: VehicleProfile | null) => {
       const p = profile ?? DEFAULT_VEHICLE
@@ -77,26 +73,17 @@ export default function App() {
       const targetEthanolPct = parseFloat(values.targetEthanolPct) / 100
       const e85EthanolPct = parseFloat(values.e85EthanolPctOverride) / 100
       const gasolineEthanolPct = GASOLINE_ETHANOL_PCT[values.gasolineType]
-
       if (
-        isNaN(remainingL) ||
-        isNaN(remainingEthanolPct) ||
-        isNaN(targetFillL) ||
-        isNaN(targetEthanolPct) ||
-        isNaN(e85EthanolPct)
+        isNaN(remainingL) || isNaN(remainingEthanolPct) ||
+        isNaN(targetFillL) || isNaN(targetEthanolPct) || isNaN(e85EthanolPct)
       ) {
         setResult(null)
         return
       }
-
       const res = computeBlend({
         tankCapacityL: p.tankCapacityL,
-        remainingL,
-        remainingEthanolPct,
-        targetFillL,
-        targetEthanolPct,
-        e85EthanolPct,
-        gasolineEthanolPct,
+        remainingL, remainingEthanolPct, targetFillL,
+        targetEthanolPct, e85EthanolPct, gasolineEthanolPct,
       })
       setResult(res)
     },
@@ -106,12 +93,9 @@ export default function App() {
   function handleFormChange(values: BlendFormValues) {
     setForm(values)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      compute(values, vehicleProfile)
-    }, 200)
+    debounceRef.current = setTimeout(() => compute(values, vehicleProfile), 200)
   }
 
-  // Trigger compute on initial form load
   useEffect(() => {
     compute(form, vehicleProfile)
   }, [vehicleProfile]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -143,14 +127,11 @@ export default function App() {
     }
     appendHistoryEntry(entry)
     setHistory(getHistory())
-
-    // Update tank state for next time
     setLastTankState({
       remainingL: entry.totalFillL,
       remainingEthanolPct: result.finalEthanolPct / 100,
       lastUpdated: entry.date,
     })
-    // Pre-fill the form for next session
     setForm(prev => ({
       ...prev,
       remainingL: String(entry.totalFillL),
@@ -165,75 +146,59 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-surface dark:bg-surface-dark font-sans">
+
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-brand-100/60 dark:border-brand-900/40">
         <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl" aria-hidden="true">⛽</span>
-            <h1 className="text-lg font-bold text-brand-700 dark:text-brand-400">Ethanol 50</h1>
-            {vehicleProfile && (
-              <span className="hidden sm:inline text-sm text-gray-500 dark:text-gray-400">
-                — {vehicleProfile.name}
-              </span>
-            )}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white text-base font-bold shadow-sm">
+              e
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold text-brand-800 dark:text-brand-300 leading-tight">
+                Ethanol
+              </h1>
+              {vehicleProfile ? (
+                <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight truncate max-w-[160px]">
+                  {vehicleProfile.name}
+                </p>
+              ) : (
+                <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight">
+                  Optimiseur de mélange
+                </p>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowHistory(true)}
-              aria-label="Historique des pleins"
-            >
-              📋 Historique
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} aria-label="Historique">
+              Historique
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowProfile(true)}
-              aria-label="Paramètres véhicule"
-            >
-              🚗 Véhicule
+            <Button variant="ghost" size="sm" onClick={() => setShowProfile(true)} aria-label="Véhicule">
+              Véhicule
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="max-w-xl mx-auto px-4 py-6 space-y-6">
-        <BlendForm
-          values={form}
-          onChange={handleFormChange}
-          vehicleProfile={vehicleProfile}
-        />
+      {/* Main */}
+      <main className="max-w-xl mx-auto px-4 py-6 space-y-4">
+        <BlendForm values={form} onChange={handleFormChange} vehicleProfile={vehicleProfile} />
 
         <section aria-label="Résultat du calcul">
-          <Result
-            result={result}
-            onSave={result?.status === 'ok' ? handleSaveFill : undefined}
-          />
+          <Result result={result} onSave={result?.status === 'ok' ? handleSaveFill : undefined} />
         </section>
 
-        <p className="text-xs text-center text-gray-400 dark:text-gray-500 pb-4">
-          Cette app est réservée aux véhicules FlexFuel ou équipés d'un boîtier E85 homologué.
-          Respectez le % éthanol max recommandé par votre constructeur.
+        <p className="text-xs text-center text-gray-300 dark:text-gray-600 pb-4">
+          Réservé aux véhicules FlexFuel ou boîtier E85 homologué
         </p>
       </main>
 
-      {/* Modals */}
       {showProfile && (
-        <VehicleProfileModal
-          profile={vehicleProfile}
-          onSave={handleSaveProfile}
-          onClose={() => setShowProfile(false)}
-        />
+        <VehicleProfileModal profile={vehicleProfile} onSave={handleSaveProfile} onClose={() => setShowProfile(false)} />
       )}
       {showHistory && (
-        <HistoryModal
-          history={history}
-          onClear={handleClearHistory}
-          onClose={() => setShowHistory(false)}
-        />
+        <HistoryModal history={history} onClear={handleClearHistory} onClose={() => setShowHistory(false)} />
       )}
     </div>
   )

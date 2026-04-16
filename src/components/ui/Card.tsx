@@ -7,9 +7,9 @@ type CardProps = {
 export function Card({ children, className = '', as: Tag = 'div' }: CardProps) {
   return (
     <Tag
-      className={`rounded-xl border border-gray-200 dark:border-gray-700
-        bg-white dark:bg-gray-800
-        shadow-sm p-4 ${className}`}
+      className={`rounded-2xl border border-brand-100/60 dark:border-brand-900/40
+        bg-white dark:bg-surface-card-dark
+        shadow-card p-5 ${className}`}
     >
       {children}
     </Tag>
@@ -18,7 +18,7 @@ export function Card({ children, className = '', as: Tag = 'div' }: CardProps) {
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+    <h2 className="label-caps text-brand-600 dark:text-brand-400 mb-3">
       {children}
     </h2>
   )
