@@ -44,7 +44,6 @@ function exportCsv(history: HistoryEntry[]) {
     e.finalEthanolPct.toFixed(1),
     e.remainingLBefore.toFixed(1),
     (e.remainingEthanolPctBefore * 100).toFixed(1),
-    e.season === 'summer' ? 'Été' : 'Hiver',
     e.costEuros != null ? e.costEuros.toFixed(2) : '',
   ])
   const csv = [headers, ...rows]

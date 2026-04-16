@@ -24,7 +24,6 @@ export const HistoryEntrySchema = z.object({
   totalFillL: z.number().min(0),
   costEuros: z.number().min(0).optional(),
   gasolineType: z.enum(['SP95-E10', 'SP98', 'SP95']),
-  season: z.enum(['summer', 'winter']),
 })
 
 export const HistorySchema = z.array(HistoryEntrySchema)

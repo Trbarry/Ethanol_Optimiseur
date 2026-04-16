@@ -33,7 +33,6 @@ const ENTRY: HistoryEntry = {
   finalEthanolPct: 50.0,
   totalFillL: 51,
   gasolineType: 'SP95-E10',
-  season: 'summer',
 }
 
 beforeEach(() => {

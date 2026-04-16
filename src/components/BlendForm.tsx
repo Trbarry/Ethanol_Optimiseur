@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react'
-import type { GasolineType, Season, VehicleProfile } from '../types'
-import { GASOLINE_ETHANOL_PCT, E85_ETHANOL_PCT } from '../types'
+import type { GasolineType, VehicleProfile } from '../types'
+import { GASOLINE_ETHANOL_PCT } from '../types'
 import { Input } from './ui/Input'
 import { Card, SectionTitle } from './ui/Card'
 
@@ -10,8 +9,7 @@ export type BlendFormValues = {
   targetFillL: string
   targetEthanolPct: string // 0-100
   gasolineType: GasolineType
-  season: Season
-  e85EthanolPctOverride: string // 0-100, optionally overrides season default
+  e85EthanolPctOverride: string // 0-100
 }
 
 type Props = {
@@ -29,16 +27,6 @@ const GASOLINE_OPTIONS: { value: GasolineType; label: string }[] = [
 export function BlendForm({ values, onChange, vehicleProfile }: Props) {
   const tankMax = vehicleProfile?.tankCapacityL ?? 100
   const targetFillNum = parseFloat(values.targetFillL) || 0
-  // Sync e85 override when season toggles — only if user hasn't manually edited it
-  const prevSeason = useRef(values.season)
-
-  useEffect(() => {
-    if (prevSeason.current !== values.season) {
-      prevSeason.current = values.season
-      const defaultPct = (E85_ETHANOL_PCT[values.season] * 100).toFixed(0)
-      onChange({ ...values, e85EthanolPctOverride: defaultPct })
-    }
-  }, [values.season]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function set(field: keyof BlendFormValues, v: string) {
     onChange({ ...values, [field]: v })
@@ -134,38 +122,6 @@ export function BlendForm({ values, onChange, vehicleProfile }: Props) {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <span
-                id="season-label"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Saison E85
-              </span>
-              <div
-                role="group"
-                aria-labelledby="season-label"
-                className="flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden"
-              >
-                {(['summer', 'winter'] as const).map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => set('season', s)}
-                    aria-pressed={values.season === s}
-                    className={`flex-1 py-2 text-sm font-medium transition-colors
-                      ${values.season === s
-                        ? 'bg-brand-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                  >
-                    {s === 'summer' ? '☀️ Été' : '❄️ Hiver'}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
             <Input
               label="% éthanol E85 réel"
               type="number"
@@ -177,14 +133,10 @@ export function BlendForm({ values, onChange, vehicleProfile }: Props) {
               value={values.e85EthanolPctOverride}
               onChange={e => set('e85EthanolPctOverride', e.target.value)}
             />
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                % éthanol essence
-              </span>
-              <div className="rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 px-3 py-2 text-base text-gray-500 dark:text-gray-400">
-                {gasolinePct} %
-              </div>
-            </div>
+          </div>
+
+          <div className="text-xs text-gray-400 dark:text-gray-500">
+            Essence complément : {gasolinePct}% éthanol
           </div>
         </div>
       </Card>

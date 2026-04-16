@@ -33,8 +33,6 @@ export type BlendResult =
       reason: string
     }
 
-export type Season = 'summer' | 'winter'
-
 export type GasolineType = 'SP95-E10' | 'SP98' | 'SP95'
 
 export const GASOLINE_ETHANOL_PCT: Record<GasolineType, number> = {
@@ -43,10 +41,7 @@ export const GASOLINE_ETHANOL_PCT: Record<GasolineType, number> = {
   SP95: 0.0,
 }
 
-export const E85_ETHANOL_PCT: Record<Season, number> = {
-  summer: 0.85,
-  winter: 0.7,
-}
+export const E85_ETHANOL_PCT = 0.85
 
 export type VehicleProfile = {
   name: string
@@ -72,5 +67,4 @@ export type HistoryEntry = {
   totalFillL: number
   costEuros?: number
   gasolineType: GasolineType
-  season: Season
 }

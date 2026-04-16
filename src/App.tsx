@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { BlendResult, VehicleProfile, HistoryEntry } from './types'
-import { E85_ETHANOL_PCT, GASOLINE_ETHANOL_PCT } from './types'
+import { GASOLINE_ETHANOL_PCT } from './types'
 import { computeBlend } from './lib/blend'
 import {
   getVehicleProfile,
@@ -33,7 +33,6 @@ function buildDefaultForm(profile: VehicleProfile | null): BlendFormValues {
     targetFillL: String(p.tankCapacityL),
     targetEthanolPct: String(Math.round(p.defaultTargetEthanolPct * 100)),
     gasolineType: 'SP95-E10',
-    season: 'summer',
     e85EthanolPctOverride: '85',
   }
 }
@@ -120,7 +119,6 @@ export default function App() {
   function handleSaveProfile(profile: VehicleProfile) {
     saveVehicleProfile(profile)
     setVehicleProfile(profile)
-    // Update form defaults when profile changes
     setForm(prev => ({
       ...prev,
       targetFillL: String(profile.tankCapacityL),
@@ -142,7 +140,6 @@ export default function App() {
       finalEthanolPct: result.finalEthanolPct,
       totalFillL: parseFloat(form.targetFillL) || 0,
       gasolineType: form.gasolineType,
-      season: form.season,
     }
     appendHistoryEntry(entry)
     setHistory(getHistory())
@@ -166,9 +163,6 @@ export default function App() {
     clearHistory()
     setHistory([])
   }
-
-  const defaultE85Pct = (E85_ETHANOL_PCT[form.season] * 100).toFixed(0)
-  const e85Changed = form.e85EthanolPctOverride !== defaultE85Pct
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -207,16 +201,6 @@ export default function App() {
 
       {/* Main content */}
       <main className="max-w-xl mx-auto px-4 py-6 space-y-6">
-        {/* E85 season hint */}
-        {e85Changed && (
-          <div
-            role="status"
-            className="text-xs text-center text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2"
-          >
-            E85 réel modifié ({form.e85EthanolPctOverride}%) — valeur saisonnière : {defaultE85Pct}%
-          </div>
-        )}
-
         <BlendForm
           values={form}
           onChange={handleFormChange}
