@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply antialiased;
+  }
+
+  /* Smooth transition for result zone only */
+  [aria-label="Résultat du calcul"] > * {
+    transition: opacity 0.15s ease;
+  }
+}
